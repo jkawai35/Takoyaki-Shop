@@ -37,8 +37,7 @@ const mtlLoader = new MTLLoader();
 const warmLight = 0xfff2cc;
 
 //Directional light (requirement)
-const moonLight = new THREE.DirectionalLight(0xaaaaaa, 1);  // Soft light, lower intensity
-moonLight.position.set(5, 10, 5);  // Position it in the sky (adjust as needed)
+const moonLight = new THREE.AmbientLight(0xaaaaaa, 0.2);  // Soft light, lower intensity
 moonLight.castShadow = true; 
 
 //Spot Light (requirement)
@@ -198,6 +197,7 @@ function animate(){
         spotLight2.intensity = 0;
         spotLight3.intensity = 0;
         spotLight4.intensity = 0;
+        moonLight.intensity = 1;
 
     }
     if (worldPosition.x > 0 && (worldPosition.y < -5 && worldPosition.y > -6)){
@@ -207,6 +207,7 @@ function animate(){
         spotLight2.intensity = 5;
         spotLight3.intensity = 5;
         spotLight4.intensity = 5;
+        moonLight.intensity = 0.2;
     }
 
     controls.update();
