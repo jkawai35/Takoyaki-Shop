@@ -38,7 +38,6 @@ const warmLight = 0xfff2cc;
 
 //Directional light (requirement)
 const moonLight = new THREE.AmbientLight(0xaaaaaa, 0.2);  // Soft light, lower intensity
-moonLight.castShadow = true; 
 
 //Spot Light (requirement)
 const spotLight1 = new THREE.SpotLight(warmLight, 5);
@@ -95,11 +94,125 @@ const glowMaterial = new THREE.MeshStandardMaterial({
 const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
 glowSphere.position.set(10, -5, -8);
 
+// Ingredient boxes
+const boxGem = new THREE.BoxGeometry( 1, 1, 1 );
+
+const crateTex = loader.load('crate.png');
+crateTex.wrapS = THREE.RepeatWrapping;
+crateTex.wrapT = THREE.RepeatWrapping;
+crateTex.magFilter = THREE.NearestFilter;
+
+const boxMat = new THREE.MeshStandardMaterial({
+    map: crateTex,
+    side: THREE.DoubleSide,
+  });
+
+const box1 = new THREE.Mesh(boxGem, boxMat);
+box1.position.set(5,-4.5,-1);
+
+const box2 = new THREE.Mesh(boxGem, boxMat);
+box2.position.set(5.8,-4.5,-.25);
+
+const box3 = new THREE.Mesh(boxGem, boxMat);
+box3.position.set(5.4,-3.5,-0.5);
+
+box1.rotation.y = 45;
+box2.rotation.y = 45;
+box3.rotation.y = 45;
+
+box1.castShadow = true;
+box2.castShadow = true;
+box3.castShadow = true;
+
+// Road
+const roadGeometry = new THREE.PlaneGeometry( 30, 5 );
+const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, side: THREE.DoubleSide });
+const road = new THREE.Mesh(roadGeometry, roadMaterial);
+road.rotation.x = -Math.PI / 2;
+road.position.z = 6;
+road.position.y = -4.9
+
+const lineGeometry = new THREE.PlaneGeometry( 5, 1 );
+const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+const roadline1 = new THREE.Mesh(lineGeometry, lineMaterial);
+roadline1.rotation.x = -Math.PI / 2;
+roadline1.position.z = 6;
+roadline1.position.y = -4.8
+
+const roadline2 = new THREE.Mesh(lineGeometry, lineMaterial);
+roadline2.rotation.x = -Math.PI / 2;
+roadline2.position.x = -10;
+roadline2.position.z = 6;
+roadline2.position.y = -4.8
+
+const roadline3 = new THREE.Mesh(lineGeometry, lineMaterial);
+roadline3.rotation.x = -Math.PI / 2;
+roadline3.position.x = 10;
+roadline3.position.z = 6;
+roadline3.position.y = -4.8
+
+
+
+
+
+
 
 // Moon point light
 const moonPointLight = new THREE.PointLight(0xeeeeee, 20);
 moonPointLight.position.set(10, -5, -8); 
 moonPointLight.castShadow = true;  // Enable shadow casting from the moonlight
+
+function makeLabelCanvas( baseWidth, size, name ) {
+
+    const borderSize = 2;
+    const ctx = document.createElement( 'canvas' ).getContext( '2d' );
+    const font = `${size}px bold sans-serif`;
+    ctx.font = font;
+    // measure how long the name will be
+    const textWidth = ctx.measureText( name ).width;
+
+    const doubleBorderSize = borderSize * 2;
+    const width = baseWidth + doubleBorderSize;
+    const height = size + doubleBorderSize;
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+
+    // need to set font again after resizing canvas
+    ctx.font = font;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+
+    ctx.fillStyle = 'dark purple';
+    ctx.fillRect( 0, 0, width, height );
+
+    // scale to fit but don't stretch
+    const scaleFactor = Math.min( 1, baseWidth / textWidth );
+    ctx.translate( width / 2, height / 2 );
+    ctx.scale( scaleFactor, 1 );
+    ctx.fillStyle = 'white';
+    ctx.fillText( name, 0, 0 );
+
+    return ctx.canvas;
+
+}
+
+
+const canvas = makeLabelCanvas( 150, 32, 'Lonely Takoyaki Shop' );
+const labelTex = new THREE.CanvasTexture( canvas );
+labelTex.minFilter = THREE.LinearFilter;
+labelTex.wrapS = THREE.ClampToEdgeWrapping;
+labelTex.wrapT = THREE.ClampToEdgeWrapping;
+
+const labelMaterial = new THREE.SpriteMaterial( {
+    map: labelTex,
+    transparent: true,
+} );
+
+// Create label for billboard
+const label = new THREE.Sprite( labelMaterial );
+label.scale.x = 8;
+label.position.z = -2;
+label.position.y += 2;
 
 const dayTex = cubeLoader.load([
     "sky1.png",
@@ -118,6 +231,8 @@ const nightTex = cubeLoader.load([
     "night.png",
     "night.png",
 ]);
+
+
 
 renderer.setSize(w,h);
 document.body.appendChild(renderer.domElement);
@@ -161,7 +276,6 @@ mtlLoader.load('takoyakishop.mtl', (mtl) => {
     });
 });
 
-
 scene.add(moonLight);
 scene.add(spotLight1);
 scene.add(spotLight2);
@@ -171,6 +285,14 @@ scene.add(shopLight);
 scene.add(moon);
 scene.add(moonPointLight);
 scene.add(glowSphere);
+scene.add(box1);
+scene.add(box2);
+scene.add(box3);
+scene.add(label);
+scene.add(road);
+scene.add(roadline1);
+scene.add(roadline2);
+scene.add(roadline3);
 
 const moonOrbitGroup = new THREE.Group();
 scene.add(moonOrbitGroup);
