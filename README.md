@@ -1,13 +1,22 @@
 # Takoyaki Shop
-Lookup to see added spheres. Use sliders to move light and change light color. Light movement, lights, and spotlight can be turned on and off with the buttons on the UI.
+Scene changes from night to day depending on the location of the moon. If it's daytime, all lights except the shop light are turned off. Once the moon rises again, the lights will turn back on.
 
 ## What meets the requirements
+### Lighting
 * Ambient lighting used for support lighting
-* Spot lighting from shop awning
+* Spot lighting from shop awning and car headlights
 * Point lighting used inside the shop and on the moon
+* Directional light in front of the shop
+
+### Controls
 * Has orbital controls implemented
-* Uses spheres, cubes, and cylinders
-* Sphere is both animated and textured
+
+### Primitive Shapes
+* Uses spheres, cubes, and cones
+* Moon uses two spheres and is animated
+* Crates next to shop are box primitives that are textured
+
+### Extras
 * Fog implemented
 * Shadows implemented
 * Billboards implemented

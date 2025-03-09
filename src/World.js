@@ -36,8 +36,13 @@ const objLoader = new OBJLoader();
 const mtlLoader = new MTLLoader();
 const warmLight = 0xfff2cc;
 
-//Directional light (requirement)
+//Ambient Light (requirement)
 const moonLight = new THREE.AmbientLight(0xaaaaaa, 0.2);  // Soft light, lower intensity
+
+//Directional Light
+const dirLight = new THREE.DirectionalLight(0xaaaaaa);
+dirLight.position.set(0,10,10);
+dirLight.castShadow = true;
 
 //Spot Light (requirement)
 const spotLight1 = new THREE.SpotLight(warmLight, 5);
@@ -131,6 +136,7 @@ const road = new THREE.Mesh(roadGeometry, roadMaterial);
 road.rotation.x = -Math.PI / 2;
 road.position.z = 6;
 road.position.y = -4.9
+road.receiveShadow = true;
 
 const lineGeometry = new THREE.PlaneGeometry( 5, 1 );
 const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
@@ -138,24 +144,21 @@ const roadline1 = new THREE.Mesh(lineGeometry, lineMaterial);
 roadline1.rotation.x = -Math.PI / 2;
 roadline1.position.z = 6;
 roadline1.position.y = -4.8
+roadline1.receiveShadow = true;
 
 const roadline2 = new THREE.Mesh(lineGeometry, lineMaterial);
 roadline2.rotation.x = -Math.PI / 2;
 roadline2.position.x = -10;
 roadline2.position.z = 6;
 roadline2.position.y = -4.8
+roadline2.receiveShadow = true;
 
 const roadline3 = new THREE.Mesh(lineGeometry, lineMaterial);
 roadline3.rotation.x = -Math.PI / 2;
 roadline3.position.x = 10;
 roadline3.position.z = 6;
 roadline3.position.y = -4.8
-
-
-
-
-
-
+roadline3.receiveShadow = true;
 
 // Moon point light
 const moonPointLight = new THREE.PointLight(0xeeeeee, 20);
@@ -196,6 +199,28 @@ function makeLabelCanvas( baseWidth, size, name ) {
 
 }
 
+function createCone(){
+    const coneFinished = new THREE.Object3D();
+    const coneGeo = new THREE.ConeGeometry( .5, 1.5, 30 );
+    const coneMat = new THREE.MeshStandardMaterial({
+        color: "orange",
+    });
+    const cone = new THREE.Mesh(coneGeo, coneMat);
+    cone.castShadow = true;
+
+    const baseGeo = new THREE.BoxGeometry(1, .25, 1);
+    const baseMat = new THREE.MeshStandardMaterial({
+        color: '#ff8c00',
+    });
+    const base = new THREE.Mesh(baseGeo, baseMat);
+    base.position.y -= .75;
+
+    coneFinished.add(cone);
+    coneFinished.add(base);
+    return coneFinished;
+
+}
+
 
 const canvas = makeLabelCanvas( 150, 32, 'Lonely Takoyaki Shop' );
 const labelTex = new THREE.CanvasTexture( canvas );
@@ -213,6 +238,22 @@ const label = new THREE.Sprite( labelMaterial );
 label.scale.x = 8;
 label.position.z = -2;
 label.position.y += 2;
+
+// Creat cones
+const cone1 = createCone();
+cone1.position.y = -4;
+cone1.position.z = 3;
+cone1.position.x = -12;
+
+const cone2 = createCone();
+cone2.position.y = -4;
+cone2.position.z = 3;
+cone2.position.x = -9;
+
+const cone3 = createCone();
+cone3.position.y = -4;
+cone3.position.z = 3;
+cone3.position.x = -6;
 
 const dayTex = cubeLoader.load([
     "sky1.png",
@@ -261,6 +302,78 @@ scene.add(mesh);
 camera.position.z = 8;
 camera.position.y = -2;
 
+// Car
+function createCar() {
+    const car = new THREE.Group();
+
+    const bodyGeometry = new THREE.BoxGeometry(4, 1, 2);
+    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 0.5; 
+    car.add(body);
+
+    const roofGeometry = new THREE.BoxGeometry(2.5, 0.8, 1.5);
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x990000 }); // Darker red
+    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+    roof.position.set(0, 1, 0);
+    car.add(roof);
+
+    const wheelGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
+    const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 }); // Black wheels
+
+    function createWheel(x, z) {
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        wheel.rotation.z = Math.PI / 2; 
+        wheel.rotation.y = Math.PI / 2;
+        wheel.position.set(x, 0.25, z);
+        car.add(wheel);
+    }
+
+    const headlightMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffffcc, 
+        emissive: 0xffffcc, 
+        emissiveIntensity: 3 
+    });
+    
+    const headlightGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+    const headlight1 = new THREE.Mesh(headlightGeometry, headlightMaterial);
+    headlight1.position.set(-2, 0.5, -.5);
+    car.add(headlight1);
+    
+    const headlight2 = new THREE.Mesh(headlightGeometry, headlightMaterial);
+    headlight2.position.set(-2, 0.5, .5);
+    car.add(headlight2);
+
+    const headlightLight = new THREE.SpotLight(warmLight, 2);
+    headlightLight.angle = Math.PI / 6;
+    headlightLight.position.set(-2, 0.5, -.5);
+    headlightLight.target.position.set(-7, 0.5, -.5); 
+    car.add(headlightLight);
+    car.add(headlightLight.target);
+
+    const headlightLight2 = new THREE.SpotLight(warmLight, 2);
+    headlightLight2.angle = Math.PI / 6;
+    headlightLight2.position.set(-2, 0.5, .5); 
+    headlightLight2.target.position.set(-7, 0.5, .5); 
+    car.add(headlightLight2);
+    car.add(headlightLight2.target);
+
+    createWheel(-1.5, 1); // Front left
+    createWheel(1.5, 1);  // Front right
+    createWheel(-1.5, -1); // Rear left
+    createWheel(1.5, -1);  // Rear right
+
+    car.userData.headLights = [headlightLight, headlightLight2];
+
+    return car;
+}
+
+const car = createCar();
+car.position.set(10, -5, 6);
+
+const car2 = createCar();
+car2.position.set(-5, -5, 6);
+
 //Load shop
 mtlLoader.load('takoyakishop.mtl', (mtl) => {
     mtl.preload();
@@ -275,6 +388,7 @@ mtlLoader.load('takoyakishop.mtl', (mtl) => {
         scene.add(shop);
     });
 });
+
 
 scene.add(moonLight);
 scene.add(spotLight1);
@@ -293,6 +407,12 @@ scene.add(road);
 scene.add(roadline1);
 scene.add(roadline2);
 scene.add(roadline3);
+scene.add(cone1);
+scene.add(cone2);
+scene.add(cone3);
+scene.add(dirLight);
+scene.add(car);
+scene.add(car2);
 
 const moonOrbitGroup = new THREE.Group();
 scene.add(moonOrbitGroup);
@@ -320,6 +440,12 @@ function animate(){
         spotLight3.intensity = 0;
         spotLight4.intensity = 0;
         moonLight.intensity = 1;
+        car.userData.headLights.forEach(light => {
+            light.intensity = 0;
+        });
+        car2.userData.headLights.forEach(light => {
+            light.intensity = 0;
+        });
 
     }
     if (worldPosition.x > 0 && (worldPosition.y < -5 && worldPosition.y > -6)){
@@ -330,6 +456,12 @@ function animate(){
         spotLight3.intensity = 5;
         spotLight4.intensity = 5;
         moonLight.intensity = 0.2;
+        car.userData.headLights.forEach(light => {
+            light.intensity = 5;
+        });
+        car2.userData.headLights.forEach(light => {
+            light.intensity = 5;
+        });
     }
 
     controls.update();
