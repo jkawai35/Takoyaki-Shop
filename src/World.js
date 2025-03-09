@@ -364,7 +364,8 @@ function createCar() {
     createWheel(1.5, -1);  // Rear right
 
     car.userData.headLights = [headlightLight, headlightLight2];
-
+    car.castShadow = true;
+    
     return car;
 }
 
