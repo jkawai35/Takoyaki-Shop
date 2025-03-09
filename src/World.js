@@ -3,19 +3,8 @@ import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-//Stuff for requirements
-//Point light with lanterns
-//Hemisphere light
-//Already have directional light
-//
-//Extras
-//Shadows
-//Fog if turned to night
-//Billboards
-
 const w = window.innerWidth;
 const h = window.innerHeight;
-
 
 //Renderer
 const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -26,7 +15,6 @@ const fov = 90;
 const aspect = w/h;
 const near = 0.1;
 const far = 50;
-const color = 0xFFFFFF;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const controls = new OrbitControls( camera, renderer.domElement );
 const scene = new THREE.Scene();
@@ -73,7 +61,7 @@ spotLight4.castShadow = true;
 spotLight4.target.position.set(-3, -6, -2.5); // Directly below the light
 scene.add(spotLight4.target);
 
-// Point light
+// Point light (requirement)
 const shopLight = new THREE.PointLight(warmLight, 10); // Warm light, intensity 1, range 10
 shopLight.position.set(0, -3, -2); // Place it inside the shop
 shopLight.castShadow = true; // Enable shadows
@@ -365,7 +353,7 @@ function createCar() {
 
     car.userData.headLights = [headlightLight, headlightLight2];
     car.castShadow = true;
-    
+
     return car;
 }
 
@@ -390,7 +378,7 @@ mtlLoader.load('takoyakishop.mtl', (mtl) => {
     });
 });
 
-
+// Add items to scene
 scene.add(moonLight);
 scene.add(spotLight1);
 scene.add(spotLight2);
