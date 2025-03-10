@@ -1,5 +1,5 @@
 # Takoyaki Shop
-Scene changes from night to day depending on the location of the moon. If it's daytime, all lights except the shop light are turned off. Once the moon rises again, the lights will turn back on.
+Scene changes from night to day depending on the location of the moon. If it's daytime, all lights except the shop light are turned off. Once the moon rises again, the lights will turn back on. Initial loading will lag a bit because of the model, but will work well after everything is loaded.
 
 ## What meets the requirements
 ### Lighting
@@ -10,9 +10,10 @@ Scene changes from night to day depending on the location of the moon. If it's d
 
 ### Controls
 * Has orbital controls implemented
+* Perspective camera implemented
 
 ### Primitive Shapes
-* Uses spheres, cubes, and cones
+* Uses spheres, cubes, cones, and cylinders.
 * Moon uses two spheres and is animated
 * Crates next to shop are box primitives that are textured
 
